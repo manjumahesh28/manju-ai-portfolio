@@ -8,8 +8,8 @@ import { useEffect, useRef, useState } from 'react';
 const SUGGESTIONS = [
   "What's her main tech stack?",
   'What did she build at Ddesigny?',
-  'What has she built with LangGraph?',
-  'Has she worked at Google?',
+  'Tell me about her skin disease prediction project',
+  'Where did she study?',
 ];
 const TIMEOUT_MS = 30000;
 
