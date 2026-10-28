@@ -1,14 +1,19 @@
 // POST /api/chat — the only place the API keys are used.
-// The browser sends a question; this returns a grounded answer + sources.
+// The browser sends a question (and optionally the previous one);
+// this returns a grounded answer + sources.
 
 import index from '@/data/index.json';
 import { embedQuery } from '@/lib/embed';
-import { search } from '@/lib/retrieve';
+import { search, buildRetrievalQuery } from '@/lib/retrieve';
 import { SYSTEM_PROMPT, REFUSAL, buildUserPrompt } from '@/lib/prompt';
 import { generateAnswer } from '@/lib/llm';
 
 const MIN_SIMILARITY = 0.55;
 const MAX_QUESTION_LENGTH = 500;
+
+function cleanText(value) {
+  return typeof value === 'string' ? value.trim().slice(0, MAX_QUESTION_LENGTH) : '';
+}
 
 export async function POST(request) {
   // 1. Validate the input
@@ -29,10 +34,12 @@ export async function POST(request) {
       { status: 400 }
     );
   }
+  const previousQuestion = cleanText(body?.previousQuestion);
 
   try {
-    // 2. Retrieve the most relevant chunks
-    const hits = search(index, await embedQuery(question));
+    // 2. Retrieve: short follow-ups are searched together with the previous question
+    const searchText = buildRetrievalQuery(question, previousQuestion);
+    const hits = search(index, await embedQuery(searchText));
 
     // 3. Nothing relevant → refuse without calling the model
     if (hits[0].score < MIN_SIMILARITY) {
@@ -42,7 +49,7 @@ export async function POST(request) {
     // 4. Answer from the retrieved chunks only
     const { text, provider } = await generateAnswer(
       SYSTEM_PROMPT,
-      buildUserPrompt(question, hits)
+      buildUserPrompt(question, hits, previousQuestion)
     );
 
     // 5. Send back the answer and which documents it came from

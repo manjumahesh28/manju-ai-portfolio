@@ -57,6 +57,10 @@ export default function ChatWidget() {
   }
 
   async function ask(question) {
+    // The visitor's last question, so short follow-ups have context.
+    const lastQuestion = [...messages].reverse().find((m) => m.role === 'user')?.text;
+    const previousQuestion = lastQuestion !== question ? lastQuestion : undefined;
+
     setMessages((prev) => [
       ...prev.filter((m) => m.status !== 'failed'),
       { role: 'user', text: question },
@@ -70,9 +74,9 @@ export default function ChatWidget() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, previousQuestion }),
         signal: controller.signal,
-      });
+            });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Something went wrong.');
       updateLast({ text: data.answer, sources: data.sources, status: 'done' });
@@ -126,8 +130,8 @@ export default function ChatWidget() {
               <div>
                 <strong>Talk to Manju</strong>
                 <span>Answers only from her CV and project notes</span>
-              </div>
-            </div>            <button className="close-btn" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
+            </div>
+            <button className="close-btn" onClick={() => setOpen(false)} aria-label="Close chat">×</button>            </div>            <button className="close-btn" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
           </div>
 
           <div className="log" ref={logRef} aria-live="polite">
