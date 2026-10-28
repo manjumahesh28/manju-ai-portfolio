@@ -1,12 +1,18 @@
 import ChatWidget from '@/components/ChatWidget';
 import Reveal from '@/components/Reveal';
 
+// Optional profile photo: put the image in the `public` folder (e.g. public/profile.jpg)
+// and change this to '/profile.jpg'. Leave it as null to show the "MM" monogram.
+const PROFILE_PHOTO = null;
+
 const toolkit = [
   'React.js', 'Next.js', 'JavaScript', 'Python', 'Django', 'Django REST Framework',
   'Flask', 'REST APIs', 'JWT auth', 'MySQL', 'SQL', 'Deep learning', 'DenseNet / CNNs',
   'RAG & embeddings', 'Git & GitHub', 'Vercel', 'Google Cloud (hosting)', 'Postman',
 ];
 
+// image: put a screenshot in public/projects/ and set e.g. '/projects/account-management.png'
+// repo / demo: real links only. Leave as null to hide the button.
 const projects = [
   {
     num: '01',
@@ -20,6 +26,10 @@ const projects = [
       'Secure login with role-based access to records',
       'Monthly summaries exported to PDF and Excel',
     ],
+    image: null,
+    repo: null,
+    demo: null,
+    codeNote: 'Code is private to the client',
   },
   {
     num: '02',
@@ -33,6 +43,10 @@ const projects = [
       'DenseNet reuses features across layers for image classification',
       'A learning project, not a medical diagnosis',
     ],
+    image: null,
+    repo: null, // e.g. 'https://github.com/manjumahesh28/your-repo-name'
+    demo: null,
+    codeNote: null,
   },
 ];
 
@@ -92,13 +106,13 @@ export default function Home() {
                 backend, and I&apos;ve applied deep learning to medical images.
               </p>
               <div className="hero-actions">
-                <a href="#work" className="btn btn-primary">View my work →</a>
+                <a href="#work" className="btn btn-primary">View projects →</a>
                 <a href="#contact" className="btn btn-ghost"><span className="dot" />Contact me</a>
-                <a href="https://github.com/manjumahesh28/manju-ai-portfolio" target="_blank" rel="noreferrer" className="btn btn-ghost">View source code</a>              
+                <a href="https://github.com/manjumahesh28/manju-ai-portfolio" target="_blank" rel="noreferrer" className="btn btn-ghost">Source code</a>
               </div>
               <p className="hero-hint">
                 Questions? Use <strong>Talk to Manju</strong> at the bottom right. It answers only
-                from my CV and project notes.
+                from my CV and project notes, and cites its sources.
               </p>
             </div>
 
@@ -106,7 +120,11 @@ export default function Home() {
               <div className="badge">
                 <div className="badge-clip" />
                 <div className="badge-inner">
-                  <div className="monogram">MM</div>
+                  {PROFILE_PHOTO ? (
+                    <img className="monogram photo" src={PROFILE_PHOTO} alt="" />
+                  ) : (
+                    <div className="monogram">MM</div>
+                  )}
                   <p className="badge-name">Manju Mahesh</p>
                   <p className="badge-role">Full-stack Developer</p>
                   <div className="badge-meta">
@@ -141,7 +159,7 @@ export default function Home() {
               </p>
               <div className="stats">
                 <div><strong>6</strong><span>Projects built</span></div>
-                <div><strong>2</strong><span>Work experiences</span></div>                
+                <div><strong>2</strong><span>Work experiences</span></div>
                 <div><strong>2025</strong><span>CS graduate</span></div>
               </div>
             </Reveal>
@@ -163,24 +181,51 @@ export default function Home() {
             <Reveal>
               <p className="label">Selected work</p>
               <h2 className="display h2">
-                Recent <span className="outline">projects</span><span className="accent">.</span>
+                Featured <span className="outline">projects</span><span className="accent">.</span>
               </h2>
             </Reveal>
 
-            <div className="projects">
+            <div className="features">
               {projects.map((p, i) => (
-                <Reveal key={p.name} delay={i * 120}>
-                  <article className="project">
-                    <span className="project-num">{p.num}</span>
-                    <p className="project-cat">{p.category}</p>
-                    <h3>{p.name}</h3>
-                    <p className="body">{p.summary}</p>
-                    <ul className="points">
-                      {p.points.map((pt) => <li key={pt}>{pt}</li>)}
-                    </ul>
-                    <ul className="tags">
-                      {p.stack.map((t) => <li key={t}>{t}</li>)}
-                    </ul>
+                <Reveal key={p.name}>
+                  <article className={`feature ${i % 2 === 1 ? 'feature-flip' : ''}`}>
+                    <div className="feature-media">
+                      {p.image ? (
+                        <img src={p.image} alt={`Screenshot of ${p.name}`} />
+                      ) : (
+                        <div className="feature-window" aria-hidden="true">
+                          <div className="window-bar"><i /><i /><i /></div>
+                          <div className="window-body">
+                            <span className="window-num">{p.num}</span>
+                            <span className="window-name">{p.name}</span>
+                            <span className="window-stack">{p.stack.join(' · ')}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="feature-body">
+                      <p className="project-cat">{p.category}</p>
+                      <h3>{p.name}</h3>
+                      <p className="body">{p.summary}</p>
+                      <ul className="points">
+                        {p.points.map((pt) => <li key={pt}>{pt}</li>)}
+                      </ul>
+                      <ul className="tags">
+                        {p.stack.map((t) => <li key={t}>{t}</li>)}
+                      </ul>
+                      {(p.repo || p.demo || p.codeNote) && (
+                        <div className="feature-links">
+                          {p.demo && (
+                            <a href={p.demo} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">Live demo</a>
+                          )}
+                          {p.repo && (
+                            <a href={p.repo} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">View code</a>
+                          )}
+                          {p.codeNote && <span className="code-note">{p.codeNote}</span>}
+                        </div>
+                      )}
+                    </div>
                   </article>
                 </Reveal>
               ))}
@@ -270,8 +315,8 @@ export default function Home() {
                   <div>
                     <p className="label">Socials</p>
                     <a href="https://linkedin.com/in/manjumahesh2809" target="_blank" rel="noreferrer">LinkedIn</a>
-                    <a href="https://github.com/manjumahesh28/manju-ai-portfolio" target="_blank" rel="noreferrer">This site&apos;s code</a>                    
                     <a href="https://github.com/manjumahesh28" target="_blank" rel="noreferrer">GitHub</a>
+                    <a href="https://github.com/manjumahesh28/manju-ai-portfolio" target="_blank" rel="noreferrer">This site&apos;s code</a>
                   </div>
                 </div>
               </Reveal>
@@ -288,8 +333,6 @@ export default function Home() {
       </main>
 
       <ChatWidget />
-    </> 
-    
-  
+    </>
   );
 }
