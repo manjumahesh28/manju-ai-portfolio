@@ -112,11 +112,22 @@ export default function ChatWidget() {
       {open && (
         <div className="panel" role="dialog" aria-label="Talk to Manju">
           <div className="panel-head">
-            <div>
-              <strong>Talk to Manju</strong>
-              <span>Answers only from her CV and project notes</span>
-            </div>
-            <button className="close-btn" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
+            <div className="head-left">
+              {messages.length > 0 && (
+                <button
+                  className="back-btn"
+                  onClick={() => setMessages([])}
+                  disabled={busy}
+                  aria-label="Back to suggested questions"
+                >
+                  ←
+                </button>
+              )}
+              <div>
+                <strong>Talk to Manju</strong>
+                <span>Answers only from her CV and project notes</span>
+              </div>
+            </div>            <button className="close-btn" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
           </div>
 
           <div className="log" ref={logRef} aria-live="polite">
