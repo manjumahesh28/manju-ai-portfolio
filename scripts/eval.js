@@ -46,8 +46,7 @@ for (const test of cases) {
     const res = await fetch(`${BASE_URL}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: test.question }),
-    });
+      body: JSON.stringify({ question: test.question, previousQuestion: test.previousQuestion }),    });
     const data = await res.json();
     answer = data.answer || `ERROR: ${data.error}`;
   } catch (err) {
