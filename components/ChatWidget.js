@@ -1,7 +1,7 @@
 'use client';
 
 // The "Talk to Manju" button and chat panel.
-// States: thinking (waiting for the API), done, and failed (with Retry).
+// States: thinking (searching), answering (text streaming in), done, failed (with Retry).
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -12,7 +12,6 @@ const SUGGESTIONS = [
   'Where did she study?',
 ];
 const TIMEOUT_MS = 30000;
-
 
 // Show [1] citation markers as small superscripts and **text** as bold.
 function withCitations(text) {
@@ -33,7 +32,7 @@ export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]); // { role, text, status, sources, error }
   const [input, setInput] = useState('');
-  const busy = messages.some((m) => m.status === 'thinking');
+  const busy = messages.some((m) => m.status === 'thinking' || m.status === 'answering');
   const logRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -51,9 +50,17 @@ export default function ChatWidget() {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
-  // Replace the last message (the bot's reply) with an updated version.
+  // Update the last message (the bot's reply).
   function updateLast(changes) {
     setMessages((prev) => [...prev.slice(0, -1), { ...prev[prev.length - 1], ...changes }]);
+  }
+
+  // Add a streamed piece of text to the bot's reply.
+  function appendToLast(piece) {
+    setMessages((prev) => {
+      const last = prev[prev.length - 1];
+      return [...prev.slice(0, -1), { ...last, text: last.text + piece, status: 'answering' }];
+    });
   }
 
   async function ask(question) {
@@ -74,12 +81,40 @@ export default function ChatWidget() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, previousQuestion }),
+        body: JSON.stringify({ question, previousQuestion, stream: true }),
         signal: controller.signal,
-            });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Something went wrong.');
-      updateLast({ text: data.answer, sources: data.sources, status: 'done' });
+      });
+
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Something went wrong.');
+      }
+
+      // Read the stream line by line: each line is one JSON event.
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let finished = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep any half-received line for the next round
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const event = JSON.parse(line);
+          if (event.type === 'sources') updateLast({ sources: event.sources });
+          if (event.type === 'token') appendToLast(event.text);
+          if (event.type === 'done') {
+            updateLast({ status: 'done' });
+            finished = true;
+          }
+          if (event.type === 'error') throw new Error(event.message);
+        }
+      }
+      if (!finished) throw new Error('The answer was cut off. Please try again.');
     } catch (err) {
       updateLast({
         status: 'failed',
@@ -130,8 +165,9 @@ export default function ChatWidget() {
               <div>
                 <strong>Talk to Manju</strong>
                 <span>Answers only from her CV and project notes</span>
+              </div>
             </div>
-            <button className="close-btn" onClick={() => setOpen(false)} aria-label="Close chat">×</button>            </div>            <button className="close-btn" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
+            <button className="close-btn" onClick={() => setOpen(false)} aria-label="Close chat">×</button>
           </div>
 
           <div className="log" ref={logRef} aria-live="polite">
@@ -155,10 +191,13 @@ export default function ChatWidget() {
                       Searching Manju&apos;s documents…
                     </span>
                   )}
-                  {m.status === 'done' && (
+                  {(m.status === 'answering' || m.status === 'done') && (
                     <>
-                      <p>{withCitations(m.text)}</p>
-                      {citedSources(m.text, m.sources).length > 0 && (
+                      <p>
+                        {withCitations(m.text)}
+                        {m.status === 'answering' && <span className="caret" aria-hidden="true" />}
+                      </p>
+                      {m.status === 'done' && citedSources(m.text, m.sources).length > 0 && (
                         <ul className="sources">
                           {citedSources(m.text, m.sources).map((s) => (
                             <li key={s.n}><sup>{s.n}</sup> {s.title} › {s.heading}</li>
