@@ -1,12 +1,11 @@
 // POST /api/chat — the only place the API keys are used.
 // The browser sends a question (and optionally the previous one);
 // this returns a grounded answer + sources.
-
-import index from '@/data/index.json';
 import { embedQuery } from '@/lib/embed';
 import { search, buildRetrievalQuery } from '@/lib/retrieve';
 import { SYSTEM_PROMPT, REFUSAL, buildUserPrompt } from '@/lib/prompt';
 import { generateAnswer } from '@/lib/llm';
+import { isAllowed } from '@/lib/rateLimit';
 
 const MIN_SIMILARITY = 0.55;
 const MAX_QUESTION_LENGTH = 500;
@@ -16,6 +15,14 @@ function cleanText(value) {
 }
 
 export async function POST(request) {
+    // 0. Rate limit: max 10 questions per minute per visitor
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  if (!isAllowed(ip)) {
+    return Response.json(
+      { error: 'Too many questions in a minute. Please wait a moment and try again.' },
+      { status: 429 }
+    );
+  }
   // 1. Validate the input
   let body;
   try {

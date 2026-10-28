@@ -6,7 +6,7 @@
 import { readFile } from 'node:fs/promises';
 
 const BASE_URL = process.argv[2] || 'http://localhost:3000';
-const DELAY_MS = 5000; // pause between questions so the free tiers don't rate-limit us
+const DELAY_MS = 7000; // pause between questions so the free tiers don't rate-limit us
 const REFUSAL_TEXT = "don't have information";
 
 const cases = JSON.parse(await readFile('eval/questions.json', 'utf8'));
