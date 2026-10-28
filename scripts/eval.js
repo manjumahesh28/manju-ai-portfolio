@@ -19,8 +19,10 @@ function score(test, answer) {
     .normalize('NFKC')
     .replace(/[\u00a0\u2000-\u200b\u202f\u205f\u3000]/g, ' ')
     .replace(/[\u2010\u2011\u2012\u2013\u2014]/g, '-')
+    .replace(/[\u2018\u2019\u02bc]/g, "'")   // curly apostrophes → straight
     .toLowerCase();
-  const refused = text.includes(REFUSAL_TEXT);
+    
+    const refused = text.includes(REFUSAL_TEXT);
 
   if (test.expect === 'refuse') {
     return refused ? [true, 'refused'] : [false, 'should have refused'];
@@ -46,7 +48,8 @@ for (const test of cases) {
     const res = await fetch(`${BASE_URL}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: test.question, previousQuestion: test.previousQuestion }),    });
+      body: JSON.stringify({ question: test.question, previousQuestion: test.previousQuestion }),    
+    });
     const data = await res.json();
     answer = data.answer || `ERROR: ${data.error}`;
   } catch (err) {

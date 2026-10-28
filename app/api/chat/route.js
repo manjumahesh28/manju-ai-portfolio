@@ -1,6 +1,7 @@
 // POST /api/chat — the only place the API keys are used.
 // The browser sends a question (and optionally the previous one);
 // this returns a grounded answer + sources.
+import index from '@/data/index.json';
 import { embedQuery } from '@/lib/embed';
 import { search, buildRetrievalQuery } from '@/lib/retrieve';
 import { SYSTEM_PROMPT, REFUSAL, buildUserPrompt } from '@/lib/prompt';
