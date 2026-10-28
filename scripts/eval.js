@@ -13,7 +13,13 @@ const cases = JSON.parse(await readFile('eval/questions.json', 'utf8'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function score(test, answer) {
-  const text = answer.toLowerCase();
+  // Normalise odd Unicode the model sometimes uses (non-breaking spaces,
+  // non-breaking hyphens) so "Anna University" matches with a normal space.
+  const text = answer
+    .normalize('NFKC')
+    .replace(/[\u00a0\u2000-\u200b\u202f\u205f\u3000]/g, ' ')
+    .replace(/[\u2010\u2011\u2012\u2013\u2014]/g, '-')
+    .toLowerCase();
   const refused = text.includes(REFUSAL_TEXT);
 
   if (test.expect === 'refuse') {
