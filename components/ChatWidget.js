@@ -13,9 +13,14 @@ const SUGGESTIONS = [
 ];
 const TIMEOUT_MS = 30000;
 
+// Groq's model sometimes writes citations as 【2】 instead of [2]; treat them the same.
+function fixCitations(text) {
+  return text.replace(/【(\d+)】/g, '[$1]');
+}
+
 // Show [1] citation markers as small superscripts and **text** as bold.
 function withCitations(text) {
-  return text.split(/(\[\d+\]|\*\*[^*]+\*\*)/g).map((part, i) => {
+  return fixCitations(text).split(/(\[\d+\]|\*\*[^*]+\*\*)/g).map((part, i) => {
     if (/^\[\d+\]$/.test(part)) return <sup key={i} className="cite">{part.slice(1, -1)}</sup>;
     if (/^\*\*[^*]+\*\*$/.test(part)) return <strong key={i}>{part.slice(2, -2)}</strong>;
     return part;
@@ -24,7 +29,7 @@ function withCitations(text) {
 
 // List only the sources the answer actually cited.
 function citedSources(answer, sources) {
-  const cited = new Set([...answer.matchAll(/\[(\d+)\]/g)].map((m) => Number(m[1])));
+  const cited = new Set([...fixCitations(answer).matchAll(/\[(\d+)\]/g)].map((m) => Number(m[1])));
   return sources.filter((s) => cited.has(s.n));
 }
 
