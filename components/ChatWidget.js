@@ -70,8 +70,7 @@ export default function ChatWidget() {
 
   async function ask(question) {
     // The visitor's last question, so short follow-ups have context.
-    const lastQuestion = [...messages].reverse().find((m) => m.role === 'user')?.text;
-    const previousQuestion = lastQuestion !== question ? lastQuestion : undefined;
+       const lastQuestion = [...messages].reverse().find((m) => m.role === 'user' && !m.local)?.text;    const previousQuestion = lastQuestion !== question ? lastQuestion : undefined;
 
     setMessages((prev) => [
       ...prev.filter((m) => m.status !== 'failed'),
@@ -136,6 +135,23 @@ export default function ChatWidget() {
     const q = input.trim();
     if (!q || busy) return;
     setInput('');
+
+    // Inputs with no letters (e.g. "3" or "24") aren't questions. Don't send them
+    // to the model, where they produced vague or wrong summaries; explain the citations instead.
+    if (!/\p{L}/u.test(q)) {
+      setMessages((prev) => [
+        ...prev,
+        { role: 'user', text: q, local: true },
+        {
+          role: 'bot',
+          status: 'done',
+          sources: [],
+          text: "The small numbers after an answer are citations: they point to the sources listed underneath it. Ask me anything about Manju's skills, projects, work experience or education.",
+        },
+      ]);
+      return;
+    }
+
     ask(q);
   }
 
