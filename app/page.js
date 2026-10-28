@@ -94,6 +94,7 @@ export default function Home() {
               <div className="hero-actions">
                 <a href="#work" className="btn btn-primary">View my work →</a>
                 <a href="#contact" className="btn btn-ghost"><span className="dot" />Contact me</a>
+                <a href="https://github.com/manjumahesh28/manju-ai-portfolio" target="_blank" rel="noreferrer" className="btn btn-ghost">View source code</a>              
               </div>
               <p className="hero-hint">
                 Questions? Use <strong>Talk to Manju</strong> at the bottom right. It answers only
@@ -269,6 +270,7 @@ export default function Home() {
                   <div>
                     <p className="label">Socials</p>
                     <a href="https://linkedin.com/in/manjumahesh2809" target="_blank" rel="noreferrer">LinkedIn</a>
+                    <a href="https://github.com/manjumahesh28/manju-ai-portfolio" target="_blank" rel="noreferrer">This site&apos;s code</a>                    
                     <a href="https://github.com/manjumahesh28" target="_blank" rel="noreferrer">GitHub</a>
                   </div>
                 </div>

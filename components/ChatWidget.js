@@ -6,11 +6,12 @@
 import { useEffect, useRef, useState } from 'react';
 
 const SUGGESTIONS = [
-  "What's her main tech stack?",
+  'What projects has Manju built?',
+  'How does this RAG assistant work?',
+  'What experience does she have with Django?',
   'What did she build at Ddesigny?',
-  'Tell me about her skin disease prediction project',
-  'Where did she study?',
 ];
+
 const TIMEOUT_MS = 30000;
 
 // Groq's model sometimes writes citations as 【2】 instead of [2]; treat them the same.
@@ -194,7 +195,7 @@ export default function ChatWidget() {
           <div className="log" ref={logRef} aria-live="polite">
             {messages.length === 0 && (
               <div className="empty">
-                <p>Ask anything about Manju&apos;s skills, projects or experience.</p>
+                <p>Hi! I&apos;m Manju&apos;s AI assistant. I answer from her CV, project write-ups and FAQ, and cite my sources. Try one of these:</p>               
                 {SUGGESTIONS.map((s) => (
                   <button key={s} className="suggestion" onClick={() => ask(s)}>{s}</button>
                 ))}
