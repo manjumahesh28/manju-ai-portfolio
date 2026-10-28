@@ -4,7 +4,7 @@ import Reveal from '@/components/Reveal';
 const toolkit = [
   'React.js', 'Next.js', 'JavaScript', 'Python', 'Django', 'Django REST Framework',
   'Flask', 'REST APIs', 'JWT auth', 'MySQL', 'SQL', 'Deep learning', 'DenseNet / CNNs',
-  'RAG & embeddings', 'Git & GitHub', 'Vercel', 'Google Cloud', 'Postman',
+  'RAG & embeddings', 'Git & GitHub', 'Vercel', 'Google Cloud (hosting)', 'Postman',
 ];
 
 const projects = [
@@ -141,7 +141,7 @@ export default function Home() {
               </p>
               <div className="stats">
                 <div><strong>6</strong><span>Projects built</span></div>
-                <div><strong>2</strong><span>Developer roles</span></div>
+                <div><strong>2</strong><span>Work experiences</span></div>                
                 <div><strong>2025</strong><span>CS graduate</span></div>
               </div>
             </Reveal>

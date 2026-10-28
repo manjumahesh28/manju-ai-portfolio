@@ -5,7 +5,7 @@ title: Manju Mahesh — CV
 # Manju Mahesh — CV
 
 ## Summary
-Manju Mahesh is a Computer Science Engineering graduate and certified Python Full Stack Developer based in Abu Dhabi, UAE. She builds web applications with React.js on the frontend and Django / Django REST Framework on the backend, and has built financial and accounting applications, including an account management system for Ddesigny Architectural Consultancy and an e-accounting / e-invoicing platform on Google Cloud. She has also built deep-learning projects for medical image classification. Manju is looking for full-stack developer and junior AI developer roles in the UAE.
+Manju Mahesh is a Computer Science Engineering graduate and certified Python Full Stack Developer based in Abu Dhabi, UAE. She builds web applications with React.js on the frontend and Django / Django REST Framework on the backend, and has built financial and accounting applications, including an account management system for Ddesigny Architectural Consultancy. She has also built deep-learning projects for medical image classification. Manju is looking for full-stack developer and junior AI developer roles in the UAE.
 
 ## Education
 - Manju has a Bachelor of Engineering in Computer Science and Engineering from Anna University, India (2021–2025), with a GPA of 3.2.
@@ -37,7 +37,7 @@ Manju Mahesh is a Computer Science Engineering graduate and certified Python Ful
 - Backend: Django, Django REST Framework, Flask, RESTful API design, JWT authentication.
 - Databases: MySQL.
 - Machine learning: deep learning for image classification (DenseNet, CNNs).
-- Cloud and deployment: Google Cloud, Vercel, hosting and domain management.
+- Cloud and deployment: Vercel, Google Cloud (hosting), domain management.
 - Tools: Git, GitHub, VS Code, Postman, Chrome DevTools, Claude Code.
 - Other: WordPress, Adobe Dreamweaver, technical support and troubleshooting.
 
